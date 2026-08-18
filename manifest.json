@@ -1,0 +1,11 @@
+{
+  "name": "Cancel That Order",
+  "short_name": "Cancel That Order",
+  "description": "Miracleeee's official food-ordering intervention department. ❤️",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fff8f2",
+  "theme_color": "#ff5c8a",
+  "orientation": "portrait"
+}
