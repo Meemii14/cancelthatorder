@@ -14,49 +14,63 @@
 <body>
   <div class="ticker">🚨 ORDERING ACTIVITY UNDER SURVEILLANCE • ANNA IS A PERSON OF INTEREST • 🚨</div>
   <main>
-    <p class="eyebrow">🏛️ THE MINISTRY OF BABE'S WAISTLINE</p>
-    <h1>Operation:<br><span>Cancel That Order</span></h1>
-    <p>A relationship-sponsored intervention program for suspicious food orders. Built especially for Miracleeee. ❤️</p>
+    <header class="hero">
+      <p class="eyebrow">🏛️ THE MINISTRY OF BABE'S WAISTLINE</p>
+      <h1>Operation:<br><span>Cancel That Order</span></h1>
+      <p>A relationship-sponsored intervention program built especially for Miracleeee. ❤️</p>
+    </header>
 
-    <section>
+    <section class="card">
       <h2 id="status">📱 Checking your behaviour...</h2>
       <p id="message"></p>
     </section>
 
-    <section>
-      <h2>💧 Pap Water Inspection</h2>
-      <p id="pap">Have you drunk your pap water?</p>
-      <button onclick="drinkPap()">YES, BOSS 😇</button>
-      <button onclick="noPap()">NO 😭</button>
+    <section class="card notification-card">
+      <p class="label">📲 REMINDER DEPARTMENT</p>
+      <h2>Phone reminders</h2>
+      <p>Let the Ministry send Miracleeee important reminders directly to her phone. 😂</p>
+      <button class="primary" onclick="enableNotifications()">🔔 ACTIVATE MY REMINDERS</button>
+      <p id="notificationStatus" class="small">Notifications are currently inactive.</p>
     </section>
 
-    <section>
+    <section class="card">
+      <h2>💧 Pap Water Inspection</h2>
+      <p id="pap">Have you drunk your pap water?</p>
+      <div class="button-row">
+        <button onclick="drinkPap()">YES, BOSS 😇</button>
+        <button onclick="noPap()">NO 😭</button>
+      </div>
+    </section>
+
+    <section class="card">
       <h2>📱 Can I Order This?</h2>
       <input id="food" placeholder="e.g. shawarma, pizza..." autocomplete="off">
-      <button onclick="investigate()">INVESTIGATE 🔍</button>
+      <button class="primary" onclick="investigate()">INVESTIGATE 🔍</button>
       <p id="result"></p>
     </section>
 
-    <section class="anna">
+    <section class="card anna">
+      <p class="label">🚨 PERSON OF INTEREST</p>
       <h2>👩🏾‍🍳 Anna Alert</h2>
-      <p>Private chef monitoring system. Threat level: HIGH 🌶️🌶️🌶️🌶️🌶️</p>
-      <button onclick="anna()">🚨 ANNA IS BRINGING FOOD</button>
+      <p>Private chef monitoring system.</p>
+      <div class="threat">THREAT LEVEL: HIGH 🌶️🌶️🌶️🌶️🌶️</div>
+      <button class="primary" onclick="anna()">🚨 ANNA IS BRINGING FOOD</button>
       <p id="anna"></p>
     </section>
 
-    <section>
+    <section class="card">
       <h2>🛵 The Rider Is Already On The Way?</h2>
-      <button onclick="damage()">DAMAGE CONTROL MODE 🚨</button>
+      <button class="primary" onclick="damage()">DAMAGE CONTROL MODE 🚨</button>
       <p id="damage"></p>
     </section>
 
-    <section>
+    <section class="card">
       <h2>🤨 Random Boyfriend Intervention</h2>
       <p id="random">Press the button. I dare you.</p>
-      <button onclick="intervene()">DISTURB ME 😂</button>
+      <button class="primary" onclick="intervene()">DISTURB ME 😂</button>
     </section>
 
-    <section>
+    <section class="card love">
       <h2>❤️ Babe, Listen.</h2>
       <p>No guilt. No punishment. No starving. Just small steps, better choices, and occasionally... closing the food delivery app. 😭❤️</p>
     </section>
