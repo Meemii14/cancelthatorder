@@ -1,46 +1,50 @@
 const $ = id => document.getElementById(id);
 
 const jokes = [
-  'Your delivery rider knows your address too well.',
+  'Your delivery rider knows your address too well. We need to discuss this.',
   'This is not hunger. This is boredom wearing a wig.',
   'Put. The. Card. Down.',
   'Just because there is a discount does not mean it is destiny.',
   'Anna has not been cleared to bring extra food today.',
-  'Opening the food delivery app is not a hobby.'
+  'Opening the food delivery app is not a hobby, Miracleeee.',
+  'The app is open again? Fascinating behaviour.'
 ];
 
 function status() {
   const h = new Date().getHours();
   if (h >= 18 && h < 22) {
-    $('status').textContent = '🍽️ DINNER APPROVED 🎉';
-    $('message').textContent = 'Congratulations, babe. The Ministry has officially approved dinner.';
+    $('status').textContent = '🍽️ DINNER IS APPROVED 🎉';
+    $('message').textContent = 'Congratulations, babe. You may now eat without triggering an investigation. Because we are not monsters. 😭❤️';
   } else if (h >= 14 && h < 18) {
-    $('status').textContent = '💧 Pap Water Intervention Time';
-    $('message').textContent = 'Before discussing shawarma or anything fried... drink your pap water.';
+    $('status').textContent = '💧 PAP WATER INSPECTION';
+    $('message').textContent = 'Before discussing shawarma, pizza or anything fried... where is the pap water? 👀';
   } else if (h >= 10 && h < 14) {
-    $('status').textContent = '🤨 Suspicious Ordering Activity';
-    $('message').textContent = 'Opening the food app is not a hobby, babe.';
+    $('status').textContent = '🤨 SUSPICIOUS ORDERING ACTIVITY';
+    $('message').textContent = 'Miracleeee. Opening the food app is not a hobby. Close it with confidence.';
+  } else if (h >= 22) {
+    $('status').textContent = '🚨 LATE-NIGHT ORDERING DETECTED';
+    $('message').textContent = 'Why is the food delivery app open at this hour? Put the phone down, madam. 😭';
   } else {
-    $('status').textContent = '📱 Ordering Under Surveillance';
-    $('message').textContent = 'The Ministry is watching suspicious food-related behaviour.';
+    $('status').textContent = '📱 MIRACLEEEE IS UNDER SURVEILLANCE';
+    $('message').textContent = 'The Ministry has detected suspicious food-related behaviour. We are observing quietly. 👀';
   }
 }
 
 function drinkPap() {
-  $('pap').textContent = '🥳 GOOD GIRL! Hydration achievement unlocked. The Ministry is proud.';
+  $('pap').textContent = '🥳 GOOD GIRL! Pap water successfully located. The Ministry will reduce surveillance for the next 17 minutes.';
 }
 
 function noPap() {
-  $('pap').textContent = 'Interesting. So pap water is a problem, but shawarma is somehow a possibility? The audacity is impressive.';
+  $('pap').textContent = 'Interesting. Pap water is apparently difficult, but ordering shawarma is somehow effortless? The audacity is impressive. 😭';
 }
 
 function investigate() {
   const f = $('food').value.trim();
   if (!f) {
-    $('result').textContent = 'Nice try. Tell the Ministry what suspicious food item is being investigated.';
+    $('result').textContent = 'Nice try. Tell the Ministry what suspicious food item is currently occupying your thoughts.';
     return;
   }
-  $('result').innerHTML = `🔍 INVESTIGATION COMPLETE.<br><br>So... you want <strong>${escapeHtml(f)}</strong>? Have you drunk your pap water, or are we just browsing menus recreationally?`;
+  $('result').innerHTML = `🔍 <strong>INVESTIGATION COMPLETE.</strong><br><br>So... you want <strong>${escapeHtml(f)}</strong>? Have you checked whether Anna is bringing food, or are we browsing menus recreationally again? 🤨`;
   $('food').value = '';
 }
 
@@ -52,14 +56,15 @@ function escapeHtml(value) {
 
 function anna() {
   $('anna').textContent = [
-    '🚨 EVERYBODY STAY CALM. ANNA HAS STARTED COOKING. This is now a professional-level food threat.',
-    '👩🏾‍🍳 Private chef activity confirmed. Anna has access to ingredients. You have access to a mouth. We need to act quickly.',
-    '⚠️ Anna alert level: CRITICAL. One food source is enough for today. 😭'
-  ][Math.floor(Math.random() * 3)];
+    '🚨 EVERYBODY STAY CALM. ANNA HAS BEEN INFORMED. She may already be reaching for ingredients.',
+    '👩🏾‍🍳 Anna has received the report. Please remain where you are and step away from the delivery app.',
+    '⚠️ ANNA ALERT LEVEL: CRITICAL. One food source is enough for today. We repeat: Anna exists. 😭',
+    '📞 Anna is probably wondering why her friend is trying to order food again while she can literally bring something.'
+  ][Math.floor(Math.random() * 4)];
 }
 
 function damage() {
-  $('damage').textContent = 'Damage-control mode activated. The rider is already on the way, so enjoy your food. No guilt, no dramatic self-judgement. Tomorrow, we continue the journey. ❤️';
+  $('damage').textContent = 'Okay, okay. The rider is already coming. 😭 Eat your food, enjoy your food, and do not punish yourself over it. Tomorrow we continue the journey. The Ministry believes in you. ❤️';
 }
 
 function intervene() {
@@ -75,27 +80,24 @@ function urlBase64ToUint8Array(base64String) {
 
 async function enableNotifications() {
   const statusEl = $('notificationStatus');
-
   if (!('Notification' in window) || !('serviceWorker' in navigator) || !('PushManager' in window)) {
-    statusEl.textContent = '😭 Push notifications are not supported here. Open the HTTPS app URL in a supported browser.';
+    statusEl.textContent = '😭 Your browser said “absolutely not.” Open the HTTPS Codespace/app link in a supported browser.';
     return;
   }
 
   try {
-    const permission = Notification.permission === 'granted'
-      ? 'granted'
-      : await Notification.requestPermission();
+    statusEl.textContent = '👀 Miracleeee is being asked to join the Ministry...';
+    const permission = Notification.permission === 'granted' ? 'granted' : await Notification.requestPermission();
 
     if (permission !== 'granted') {
-      statusEl.textContent = '🔕 Notifications were not allowed. The Ministry is disappointed.';
+      statusEl.textContent = '🔕 Permission denied. The Ministry has been respectfully kicked out of your phone. 😭';
       return;
     }
 
-    statusEl.textContent = '⏳ Connecting Miracleeee to the Ministry...';
-
+    statusEl.textContent = '🎉 PERMISSION GRANTED. Connecting your phone to the tiny food police...';
     const registration = await navigator.serviceWorker.ready;
     const keyResponse = await fetch('/api/vapid-public-key');
-    if (!keyResponse.ok) throw new Error('Push server is not running.');
+    if (!keyResponse.ok) throw new Error('The reminder server is taking a nap.');
     const { publicKey } = await keyResponse.json();
 
     let subscription = await registration.pushManager.getSubscription();
@@ -111,21 +113,18 @@ async function enableNotifications() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ subscription })
     });
+    if (!saveResponse.ok) throw new Error('The Ministry failed to save your phone. Very embarrassing.');
 
-    if (!saveResponse.ok) throw new Error('Could not save push subscription.');
-
-    statusEl.innerHTML = '✅ <strong>REMINDERS ACTIVATED.</strong><br>Test notification sent. Miracleeee is officially under surveillance. 😂';
+    statusEl.innerHTML = '✅ <strong>WELCOME TO THE MINISTRY OF MINDING YOUR BUSINESS.</strong><br>Your test notification has been dispatched. 😭❤️';
   } catch (error) {
     console.error(error);
-    statusEl.textContent = `😭 Couldn't activate reminders: ${error.message}`;
+    statusEl.textContent = `😭 The Ministry tripped over its own shoelaces: ${error.message}`;
   }
 }
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js').catch(error => {
-      console.error('Service worker registration failed:', error);
-    });
+    navigator.serviceWorker.register('./service-worker.js').catch(error => console.error('Service worker registration failed:', error));
   });
 }
 
