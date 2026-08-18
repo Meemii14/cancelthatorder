@@ -66,67 +66,59 @@ function intervene() {
   $('random').textContent = jokes[Math.floor(Math.random() * jokes.length)];
 }
 
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const rawData = atob(base64);
+  return Uint8Array.from([...rawData].map(char => char.charCodeAt(0)));
+}
+
 async function enableNotifications() {
-  if (!('Notification' in window)) {
-    $('notificationStatus').textContent = '😭 This browser does not support notifications.';
+  const statusEl = $('notificationStatus');
+
+  if (!('Notification' in window) || !('serviceWorker' in navigator) || !('PushManager' in window)) {
+    statusEl.textContent = '😭 Push notifications are not supported here. Open the HTTPS app URL in a supported browser.';
     return;
   }
 
-  if (!('serviceWorker' in navigator)) {
-    $('notificationStatus').textContent = '😭 This browser does not support the notification system.';
-    return;
-  }
+  try {
+    const permission = Notification.permission === 'granted'
+      ? 'granted'
+      : await Notification.requestPermission();
 
-  const permission = await Notification.requestPermission();
-
-  if (permission !== 'granted') {
-    $('notificationStatus').textContent = '🔕 Notifications were not allowed. The Ministry is disappointed.';
-    return;
-  }
-
-  $('notificationStatus').innerHTML = '✅ <strong>REMINDERS ACTIVATED.</strong><br>Miracleeee is now officially under surveillance. 😂';
-
-  const registration = await navigator.serviceWorker.ready;
-  registration.showNotification('🚨 MIRACLEEEE!', {
-    body: 'The Ministry has successfully connected to your phone. ❤️',
-    icon: './icon-192.png',
-    badge: './icon-192.png',
-    tag: 'miracleeee-test'
-  });
-}
-
-const reminders = [
-  { hour: 9, minute: 0, title: '🌞 GOOD MORNING, MIRACLEEEE', message: "New day. New goals. Please don't start it by browsing food apps. 😂" },
-  { hour: 14, minute: 0, title: '💧 PAP WATER INSPECTION', message: 'Miracleeee... have you drunk your pap water?' },
-  { hour: 18, minute: 0, title: '🍽️ DINNER APPROVED', message: 'Congratulations, babe. Dinner has officially received Ministry approval. ❤️' },
-  { hour: 22, minute: 0, title: '🚨 LATE NIGHT ORDERING DETECTED', message: 'Miracleeee. Why are you opening the food app at this hour? 😭' }
-];
-
-const sentToday = {};
-
-async function sendReminder(reminder) {
-  const registration = await navigator.serviceWorker.ready;
-  registration.showNotification(reminder.title, {
-    body: reminder.message,
-    icon: './icon-192.png',
-    badge: './icon-192.png',
-    tag: `miracleeee-${reminder.hour}-${reminder.minute}`,
-    renotify: true
-  });
-}
-
-function checkReminders() {
-  if (!('Notification' in window) || Notification.permission !== 'granted') return;
-  const now = new Date();
-  const keyDate = now.toISOString().slice(0, 10);
-
-  reminders.forEach(reminder => {
-    const key = `${keyDate}-${reminder.hour}-${reminder.minute}`;
-    if (now.getHours() === reminder.hour && now.getMinutes() === reminder.minute && !sentToday[key]) {
-      sentToday[key] = true;
-      sendReminder(reminder);
+    if (permission !== 'granted') {
+      statusEl.textContent = '🔕 Notifications were not allowed. The Ministry is disappointed.';
+      return;
     }
-  });
+
+    statusEl.textContent = '⏳ Connecting Miracleeee to the Ministry...';
+
+    const registration = await navigator.serviceWorker.ready;
+    const keyResponse = await fetch('/api/vapid-public-key');
+    if (!keyResponse.ok) throw new Error('Push server is not running.');
+    const { publicKey } = await keyResponse.json();
+
+    let subscription = await registration.pushManager.getSubscription();
+    if (!subscription) {
+      subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(publicKey)
+      });
+    }
+
+    const saveResponse = await fetch('/api/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ subscription })
+    });
+
+    if (!saveResponse.ok) throw new Error('Could not save push subscription.');
+
+    statusEl.innerHTML = '✅ <strong>REMINDERS ACTIVATED.</strong><br>Test notification sent. Miracleeee is officially under surveillance. 😂';
+  } catch (error) {
+    console.error(error);
+    statusEl.textContent = `😭 Couldn't activate reminders: ${error.message}`;
+  }
 }
 
 if ('serviceWorker' in navigator) {
@@ -138,4 +130,3 @@ if ('serviceWorker' in navigator) {
 }
 
 status();
-setInterval(checkReminders, 60000);
