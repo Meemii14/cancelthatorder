@@ -1,4 +1,4 @@
-const CACHE_NAME = "cancel-that-order-v1";
+const CACHE_NAME = "cancel-that-order-v2";
 const APP_FILES = ["./", "./index.html", "./style.css", "./script.js", "./manifest.json"];
 
 self.addEventListener("install", event => {
@@ -16,6 +16,23 @@ self.addEventListener("activate", event => {
 self.addEventListener("fetch", event => {
   if (event.request.method !== "GET") return;
   event.respondWith(caches.match(event.request).then(cached => cached || fetch(event.request)));
+});
+
+self.addEventListener("push", event => {
+  const data = event.data?.json() || {};
+  const title = data.title || "🚨 MIRACLEEEE!";
+  const body = data.message || data.body || "The Ministry has a message for you. 😂";
+
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body,
+      icon: "./icon-192.png",
+      badge: "./icon-192.png",
+      tag: data.tag || "cancel-that-order-reminder",
+      renotify: true,
+      vibrate: [200, 100, 200]
+    })
+  );
 });
 
 self.addEventListener("notificationclick", event => {
