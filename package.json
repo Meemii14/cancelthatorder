@@ -8,6 +8,7 @@
     "dev": "node --watch server.js"
   },
   "dependencies": {
+    "@netlify/blobs": "^10.0.0",
     "express": "^5.1.0",
     "node-cron": "^4.2.1",
     "web-push": "^3.6.7"
