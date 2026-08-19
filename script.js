@@ -71,51 +71,44 @@ function intervene() {
   $('random').textContent = jokes[Math.floor(Math.random() * jokes.length)];
 }
 
-function urlBase64ToUint8Array(base64String) {
-  const padding = '='.repeat((4 - base64String.length % 4) % 4);
-  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-  const rawData = atob(base64);
-  return Uint8Array.from([...rawData].map(char => char.charCodeAt(0)));
-}
-
 async function enableNotifications() {
   const statusEl = $('notificationStatus');
-  if (!('Notification' in window) || !('serviceWorker' in navigator) || !('PushManager' in window)) {
-    statusEl.textContent = '😭 Your browser said “absolutely not.” Open the HTTPS Codespace/app link in a supported browser.';
+
+  if (!('Notification' in window)) {
+    statusEl.textContent = '😭 This browser does not support notifications. The Ministry has been denied entry.';
     return;
   }
 
   try {
     statusEl.textContent = '👀 Miracleeee is being asked to join the Ministry...';
-    const permission = Notification.permission === 'granted' ? 'granted' : await Notification.requestPermission();
+    const permission = Notification.permission === 'granted'
+      ? 'granted'
+      : await Notification.requestPermission();
 
     if (permission !== 'granted') {
       statusEl.textContent = '🔕 Permission denied. The Ministry has been respectfully kicked out of your phone. 😭';
       return;
     }
 
-    statusEl.textContent = '🎉 PERMISSION GRANTED. Connecting your phone to the tiny food police...';
-    const registration = await navigator.serviceWorker.ready;
-    const keyResponse = await fetch('/api/vapid-public-key');
-    if (!keyResponse.ok) throw new Error('The reminder server is taking a nap.');
-    const { publicKey } = await keyResponse.json();
-
-    let subscription = await registration.pushManager.getSubscription();
-    if (!subscription) {
-      subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(publicKey)
-      });
+    let registration = null;
+    if ('serviceWorker' in navigator) {
+      registration = await navigator.serviceWorker.ready;
     }
 
-    const saveResponse = await fetch('/api/subscribe', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ subscription })
-    });
-    if (!saveResponse.ok) throw new Error('The Ministry failed to save your phone. Very embarrassing.');
+    const title = '🎉 REMINDERS ACTIVATED!';
+    const options = {
+      body: 'Miracleeee, the Ministry is officially connected to your phone. ❤️ This is your test reminder. Now put the food app down. 😭',
+      tag: 'ministry-test',
+      renotify: true
+    };
 
-    statusEl.innerHTML = '✅ <strong>WELCOME TO THE MINISTRY OF MINDING YOUR BUSINESS.</strong><br>Your test notification has been dispatched. 😭❤️';
+    if (registration) {
+      await registration.showNotification(title, options);
+    } else {
+      new Notification(title, options);
+    }
+
+    statusEl.innerHTML = '✅ <strong>WELCOME TO THE MINISTRY OF MINDING YOUR BUSINESS.</strong><br>Your test notification has just been dispatched. Check your notifications. 😭❤️';
   } catch (error) {
     console.error(error);
     statusEl.textContent = `😭 The Ministry tripped over its own shoelaces: ${error.message}`;
